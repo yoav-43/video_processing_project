@@ -1,55 +1,52 @@
 import numpy as np
 import cv2
+import json
+from tqdm import tqdm
 
-from paths import FINAL_OUTPUT_PATH
+from paths import FINAL_OUTPUT_PATH, BACKGROUND_IMAGE_PATH, TRACKING_JSON_PATH
 from utils import get_video_files, load_entire_video, write_video
 from logger import get_logger
+
 logger = get_logger()
 
-
 def track_video(input_video_path):
-    logger.info('Starting Tracking')
+    logger.info("Starting Tracking")
 
-    cap_stabilize, video_width, video_height, fps = get_video_files(path=input_video_path)
-    frames_bgr = load_entire_video(cap_stabilize, color_space='bgr')
-    font, bottom_left_corner_of_text, font_scale, font_color, line_type = cv2.FONT_HERSHEY_SIMPLEX, (50, 50), 1, (
-    0, 0, 255), 2
+    cap, width, height, fps = get_video_files(input_video_path)
+    frames = load_entire_video(cap, color_space='bgr')
 
-    instruction_frame = cv2.putText(frames_bgr[0],
-                                    "Select a Rectangle and then press SPACE or ENTER button! or 'ESC' key for auto selection.",
-                                    bottom_left_corner_of_text,
-                                    font,
-                                    font_scale,
-                                    font_color,
-                                    line_type)
-    initBB = cv2.selectROI("Frame", instruction_frame, fromCenter=False, showCrosshair=True)
+    # Load and resize background image
+    background = cv2.imread(BACKGROUND_IMAGE_PATH)
+    if background is None:
+        raise FileNotFoundError(f"Background image not found at {BACKGROUND_IMAGE_PATH}")
+    background = cv2.resize(background, (width, height))
 
-    x, y, w, h = initBB
-    if any([x == 0, y == 0, w == 0, h == 0]):
-        x, y, w, h = 180, 60, 340, 740  # simply hardcoded the values
-    track_window = (x, y, w, h)
+    tracked_frames = []
+    tracking_results = {}
 
-    # set up the ROI for tracking
-    roi = frames_bgr[0][y:y + h, x:x + w]
-    hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-    reducing_light_mask = cv2.inRange(hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
-    roi_hist = cv2.calcHist([hsv_roi], [0, 1], reducing_light_mask, [256, 256], [0, 256, 0, 256])
-    cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
-    # Setup the termination criteria, 10 iterations
-    term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0)
-    tracking_frames_list = [cv2.rectangle(frames_bgr[0], (x, y), (x + w, y + h), (0, 255, 0), 2)]
-    for frame_index, frame in enumerate(frames_bgr[1:]):
-        print(f"[Tracking] Using MeanShift - Frame: {frame_index} / {len(frames_bgr) - 1}")
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        dst = cv2.calcBackProject([hsv], [0, 1], roi_hist, [0, 256, 0, 256], 1)
-        # apply meanshift to get the new location
-        ret, track_window = cv2.meanShift(dst, track_window, term_crit)
-        # Draw it on image
-        x, y, w, h = track_window
-        tracked_img = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        tracking_frames_list.append(tracked_img)
+    x, y, w, h = width // 2, height // 2, 100, 200  # Default bbox
+    for t, frame in enumerate(tqdm(frames, desc="Tracking: Processing frames")):
+        diff = np.abs(frame.astype(np.int16) - background.astype(np.int16)).sum(axis=2)
+        mask = (diff > 30).astype(np.uint8)
 
-    write_video(FINAL_OUTPUT_PATH, tracking_frames_list, fps, (video_width, video_height), is_color=True)
-    print('~~~~~~~~~~~ [Tracking] FINISHED! ~~~~~~~~~~~')
-    print('~~~~~~~~~~~ OUTPUT.avi has been created! ~~~~~~~~~~~')
-    logger.info('Finished Tracking')
+        # Clean mask
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, np.ones((7, 7), np.uint8))
+
+        # Find largest contour
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if contours:
+            largest = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(largest)
+
+        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        tracked_frames.append(frame)
+        tracking_results[str(t + 1)] = [y, x, h, w]
+
+    write_video(FINAL_OUTPUT_PATH, tracked_frames, fps, (width, height), is_color=True)
+    logger.info(f"Finished writing tracking video to {FINAL_OUTPUT_PATH}")
+
+    with open(TRACKING_JSON_PATH, 'w') as f:
+        json.dump(tracking_results, f, indent=2)
+    logger.info(f"Tracking data saved to {TRACKING_JSON_PATH}")
+    print('************ Tracking COMPLETED! ************')

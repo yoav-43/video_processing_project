@@ -13,7 +13,7 @@ from utils import (
     get_video_files,
     load_entire_video,
     release_video_files,
-    write_video,
+    write_video
 )
 from tqdm import tqdm
 from logger import get_logger
@@ -50,7 +50,7 @@ def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
     omega_f_colors, omega_b_colors = None, None
     omega_f_shoes_colors, omega_b_shoes_colors = None, None
     person_and_blue_mask_list = np.zeros((n_frames, h, w))
-    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Filtering body & shoes KDE")):
+    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Collecting body & shoes colors")):
         blue_frame, _, _ = cv2.split(frame)
         mask_for_frame = mask_list[frame_index].astype(np.uint8)
         mask_for_frame = cv2.morphologyEx(mask_for_frame, cv2.MORPH_CLOSE, disk_kernel(6))
@@ -97,7 +97,7 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
     foreground_shoes_pdf_memoization, background_shoes_pdf_memoization = dict(), dict()
     or_mask_list = np.zeros((n_frames, h, w))
     '''Filtering with KDEs general body parts & shoes'''
-    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Collecting body & shoes colors")):
+    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Filtering body & shoes KDE")):
         person_and_blue_mask = person_and_blue_mask_list[frame_index]
         person_and_blue_mask_indices = np.where(person_and_blue_mask == 1)
         y_mean, x_mean = int(np.mean(person_and_blue_mask_indices[0])), int(np.mean(person_and_blue_mask_indices[1]))

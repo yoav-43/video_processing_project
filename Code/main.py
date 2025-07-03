@@ -1,5 +1,7 @@
 import argparse
 import sys
+import time
+import json
 
 from video_stabilization import stabilize_video
 from background_subtraction import background_subtraction
@@ -12,7 +14,8 @@ from paths import (
     BINARY_MASK_VIDEO_PATH,
     BACKGROUND_IMAGE_PATH,
     MATTED_OUTPUT_PATH,
-    ALPHA_OUTPUT_PATH
+    ALPHA_OUTPUT_PATH,
+    TIMING_JSON_PATH
 )
 
 
@@ -28,6 +31,9 @@ def parse_arguments():
 
 
 def main():
+    start_time = time.time()
+    timing_dict = {}
+
     args = parse_arguments()
     logger = get_logger()
     if len(sys.argv) == 1:
@@ -38,9 +44,11 @@ def main():
 
     if args.vs:
         stabilize_video(INPUT_VIDEO_PATH)
+        timing_dict["stabilized"] = time.time() - start_time
 
     if args.bg:
         background_subtraction(STABILIZED_VIDEO_PATH)
+        timing_dict["binary"] = time.time() - start_time
 
     if args.mt:
         video_matting(
@@ -50,9 +58,16 @@ def main():
             MATTED_OUTPUT_PATH,
             ALPHA_OUTPUT_PATH
         )
+        timing_dict["matted"] = time.time() - start_time
+        timing_dict["alpha"] = time.time() - start_time
 
     if args.tk:
         track_video(MATTED_OUTPUT_PATH)
+        timing_dict["output"] = time.time() - start_time
+
+    with open(TIMING_JSON_PATH, 'w') as f:
+        json.dump(timing_dict, f, indent=2)
+    print(f"[✓] timing.json saved to {TIMING_JSON_PATH}")
 
 
 if __name__ == "__main__":
