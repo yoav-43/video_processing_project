@@ -1,0 +1,5 @@
+2025-07-03 14:42:07,394 - INFO - Video Stabilization - Initializing process.
+2025-07-03 14:42:40,295 - INFO - Video Stabilization - completed successfully
+2025-07-03 14:42:40,300 - INFO - Video Stabilization - Output saved to stabilize.avi
+2025-07-03 14:42:40,301 - INFO - Video Stabilization - process finished
+2025-07-03 14:42:40,404 - INFO - Background Subtraction - process initialization
