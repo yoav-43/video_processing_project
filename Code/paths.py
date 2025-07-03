@@ -30,6 +30,7 @@ BINARY_MASK_VIDEO_PATH = os.path.join(OUTPUTS_DIR, f'binary_{ID_SUFFIX}.avi')
 MATTED_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'matted_{ID_SUFFIX}.avi')
 ALPHA_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'alpha_{ID_SUFFIX}.avi')
 FINAL_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'OUTPUT_{ID_SUFFIX}.avi')
+LOG_PATH = os.path.join(OUTPUTS_DIR, 'log.txt')
 
 # JSON outputs
 TIMING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'timing.json')
