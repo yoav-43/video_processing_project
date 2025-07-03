@@ -1,14 +1,14 @@
 import numpy as np
 import cv2
+
+from paths import FINAL_OUTPUT_PATH
 from utils import get_video_files, load_entire_video, write_video
-import logging
-
-
-my_logger = logging.getLogger('MyLogger')
+from logger import get_logger
+logger = get_logger()
 
 
 def track_video(input_video_path):
-    my_logger.info('Starting Tracking')
+    logger.info('Starting Tracking')
 
     cap_stabilize, video_width, video_height, fps = get_video_files(path=input_video_path)
     frames_bgr = load_entire_video(cap_stabilize, color_space='bgr')
@@ -49,7 +49,7 @@ def track_video(input_video_path):
         tracked_img = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         tracking_frames_list.append(tracked_img)
 
-    write_video('../Outputs/OUTPUT.avi', tracking_frames_list, fps, (video_width, video_height), is_color=True)
+    write_video(FINAL_OUTPUT_PATH, tracking_frames_list, fps, (video_width, video_height), is_color=True)
     print('~~~~~~~~~~~ [Tracking] FINISHED! ~~~~~~~~~~~')
     print('~~~~~~~~~~~ OUTPUT.avi has been created! ~~~~~~~~~~~')
-    my_logger.info('Finished Tracking')
+    logger.info('Finished Tracking')

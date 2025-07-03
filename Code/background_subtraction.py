@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+from paths import EXTRACTED_VIDEO_PATH, BINARY_MASK_VIDEO_PATH
 from utils import (
     disk_kernel,
     choose_indices_for_foreground,
@@ -96,7 +97,7 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
     foreground_shoes_pdf_memoization, background_shoes_pdf_memoization = dict(), dict()
     or_mask_list = np.zeros((n_frames, h, w))
     '''Filtering with KDEs general body parts & shoes'''
-    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Filtering body & shoes KDE")):
+    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Collecting body & shoes colors")):
         person_and_blue_mask = person_and_blue_mask_list[frame_index]
         person_and_blue_mask_indices = np.where(person_and_blue_mask == 1)
         y_mean, x_mean = int(np.mean(person_and_blue_mask_indices[0])), int(np.mean(person_and_blue_mask_indices[1]))
@@ -262,9 +263,8 @@ def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_
     return final_masks_list, final_frames_list
 
 def write_final_video(final_masks_list, final_frames_list, cap, w, h, fps):
-    write_video(output_path='../Outputs/extracted.avi', frames=final_frames_list, fps=fps, out_size=(w, h),
-                is_color=True)
-    write_video(output_path='../Outputs/binary.avi', frames=final_masks_list, fps=fps, out_size=(w, h), is_color=False)
+    write_video(output_path=EXTRACTED_VIDEO_PATH, frames=final_frames_list, fps=fps, out_size=(w, h), is_color=True)
+    write_video(output_path=BINARY_MASK_VIDEO_PATH, frames=final_masks_list, fps=fps, out_size=(w, h), is_color=False)
     logger.debug('Background Subtraction - completed successfully')
     logger.debug('Background Subtraction - Output saved to binary.avi')
     logger.debug('Background Subtraction - Output saved to extracted.avi')
