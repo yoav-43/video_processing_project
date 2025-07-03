@@ -1,4 +1,3 @@
-# paths.py
 import os
 
 # Base directory where this script is located

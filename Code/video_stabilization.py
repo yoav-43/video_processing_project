@@ -1,9 +1,6 @@
-import cv2
 import numpy as np
-import os
+import cv2
 
-from tqdm import tqdm
-from logger import get_logger
 from utils import (
     get_video_files,
     load_entire_video,
@@ -12,15 +9,17 @@ from utils import (
     smooth,
     fixBorder
 )
-
+from paths import STABILIZED_VIDEO_PATH, TRANSFORMS_PATH
+from tqdm import tqdm
+from logger import get_logger
 logger = get_logger()
+
 MAX_CORNERS = 500
 QUALITY_LEVEL = 0.01
 MIN_DISTANCE = 30
 BLOCK_SIZE = 3
 SMOOTH_RADIUS = 5
 
-from paths import STABILIZED_VIDEO_PATH, TRANSFORMS_PATH
 
 def stabilize_video(input_video_path):
     logger.info('Video Stabilization - Initializing process.')

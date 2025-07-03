@@ -1,7 +1,6 @@
-import cv2
 import numpy as np
+import cv2
 
-from tqdm import tqdm
 from utils import (
     disk_kernel,
     choose_indices_for_foreground,
@@ -15,6 +14,7 @@ from utils import (
     release_video_files,
     write_video,
 )
+from tqdm import tqdm
 from logger import get_logger
 logger = get_logger()
 
