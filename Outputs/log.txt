@@ -1,0 +1,229 @@
+2025-07-06 20:03:56,593 - INFO - Video Stabilization - Initializing process.
+2025-07-06 20:04:14,299 - INFO - Video Stabilization - completed successfully
+2025-07-06 20:04:14,299 - INFO - Video Stabilization - Output saved to stabilize.avi
+2025-07-06 20:04:14,300 - INFO - Video Stabilization - process finished
+2025-07-06 20:04:14,597 - INFO - Background Subtraction - process initialization
+2025-07-06 20:04:19,076 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Studying Frames history
+2025-07-06 20:04:19,077 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 1 / 8 pass
+2025-07-06 20:04:26,847 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 2 / 8 pass
+2025-07-06 20:04:34,474 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 3 / 8 pass
+2025-07-06 20:04:41,836 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 4 / 8 pass
+2025-07-06 20:04:49,963 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 5 / 8 pass
+2025-07-06 20:04:59,898 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 6 / 8 pass
+2025-07-06 20:05:09,826 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 7 / 8 pass
+2025-07-06 20:05:19,705 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 8 / 8 pass
+2025-07-06 20:05:29,099 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Finished
+2025-07-06 20:20:59,659 - DEBUG - Background Subtraction - completed successfully
+2025-07-06 20:20:59,682 - DEBUG - Background Subtraction - Output saved to binary.avi
+2025-07-06 20:20:59,684 - DEBUG - Background Subtraction - Output saved to extracted.avi
+2025-07-06 20:20:59,686 - INFO - Background Subtraction - process finished
+2025-07-06 20:21:00,896 - DEBUG - Starting video matting.
+2025-07-06 20:21:05,352 - DEBUG - Processing frame 1/205
+2025-07-06 20:21:05,542 - DEBUG - Processing frame 2/205
+2025-07-06 20:21:05,716 - DEBUG - Processing frame 3/205
+2025-07-06 20:21:05,926 - DEBUG - Processing frame 4/205
+2025-07-06 20:21:06,074 - DEBUG - Processing frame 5/205
+2025-07-06 20:21:06,236 - DEBUG - Processing frame 6/205
+2025-07-06 20:21:06,393 - DEBUG - Processing frame 7/205
+2025-07-06 20:21:06,617 - DEBUG - Processing frame 8/205
+2025-07-06 20:21:06,778 - DEBUG - Processing frame 9/205
+2025-07-06 20:21:06,965 - DEBUG - Processing frame 10/205
+2025-07-06 20:21:07,135 - DEBUG - Processing frame 11/205
+2025-07-06 20:21:07,288 - DEBUG - Processing frame 12/205
+2025-07-06 20:21:07,430 - DEBUG - Processing frame 13/205
+2025-07-06 20:21:07,656 - DEBUG - Processing frame 14/205
+2025-07-06 20:21:07,822 - DEBUG - Processing frame 15/205
+2025-07-06 20:21:08,052 - DEBUG - Processing frame 16/205
+2025-07-06 20:21:08,217 - DEBUG - Processing frame 17/205
+2025-07-06 20:21:08,394 - DEBUG - Processing frame 18/205
+2025-07-06 20:21:08,601 - DEBUG - Processing frame 19/205
+2025-07-06 20:21:08,852 - DEBUG - Processing frame 20/205
+2025-07-06 20:21:09,049 - DEBUG - Processing frame 21/205
+2025-07-06 20:21:09,240 - DEBUG - Processing frame 22/205
+2025-07-06 20:21:09,500 - DEBUG - Processing frame 23/205
+2025-07-06 20:21:09,699 - DEBUG - Processing frame 24/205
+2025-07-06 20:21:09,867 - DEBUG - Processing frame 25/205
+2025-07-06 20:21:10,028 - DEBUG - Processing frame 26/205
+2025-07-06 20:21:10,162 - DEBUG - Processing frame 27/205
+2025-07-06 20:21:10,355 - DEBUG - Processing frame 28/205
+2025-07-06 20:21:10,592 - DEBUG - Processing frame 29/205
+2025-07-06 20:21:10,784 - DEBUG - Processing frame 30/205
+2025-07-06 20:21:11,048 - DEBUG - Processing frame 31/205
+2025-07-06 20:21:11,224 - DEBUG - Processing frame 32/205
+2025-07-06 20:21:11,447 - DEBUG - Processing frame 33/205
+2025-07-06 20:21:11,622 - DEBUG - Processing frame 34/205
+2025-07-06 20:21:11,785 - DEBUG - Processing frame 35/205
+2025-07-06 20:21:11,944 - DEBUG - Processing frame 36/205
+2025-07-06 20:21:12,111 - DEBUG - Processing frame 37/205
+2025-07-06 20:21:12,290 - DEBUG - Processing frame 38/205
+2025-07-06 20:21:12,431 - DEBUG - Processing frame 39/205
+2025-07-06 20:21:12,605 - DEBUG - Processing frame 40/205
+2025-07-06 20:21:12,755 - DEBUG - Processing frame 41/205
+2025-07-06 20:21:12,928 - DEBUG - Processing frame 42/205
+2025-07-06 20:21:13,189 - DEBUG - Processing frame 43/205
+2025-07-06 20:21:13,443 - DEBUG - Processing frame 44/205
+2025-07-06 20:21:13,700 - DEBUG - Processing frame 45/205
+2025-07-06 20:21:13,971 - DEBUG - Processing frame 46/205
+2025-07-06 20:21:14,245 - DEBUG - Processing frame 47/205
+2025-07-06 20:21:14,525 - DEBUG - Processing frame 48/205
+2025-07-06 20:21:14,795 - DEBUG - Processing frame 49/205
+2025-07-06 20:21:15,056 - DEBUG - Processing frame 50/205
+2025-07-06 20:21:15,308 - DEBUG - Processing frame 51/205
+2025-07-06 20:21:15,507 - DEBUG - Processing frame 52/205
+2025-07-06 20:21:15,769 - DEBUG - Processing frame 53/205
+2025-07-06 20:21:16,024 - DEBUG - Processing frame 54/205
+2025-07-06 20:21:16,283 - DEBUG - Processing frame 55/205
+2025-07-06 20:21:16,536 - DEBUG - Processing frame 56/205
+2025-07-06 20:21:16,827 - DEBUG - Processing frame 57/205
+2025-07-06 20:21:17,073 - DEBUG - Processing frame 58/205
+2025-07-06 20:21:17,319 - DEBUG - Processing frame 59/205
+2025-07-06 20:21:17,565 - DEBUG - Processing frame 60/205
+2025-07-06 20:21:17,820 - DEBUG - Processing frame 61/205
+2025-07-06 20:21:18,084 - DEBUG - Processing frame 62/205
+2025-07-06 20:21:18,337 - DEBUG - Processing frame 63/205
+2025-07-06 20:21:18,586 - DEBUG - Processing frame 64/205
+2025-07-06 20:21:18,836 - DEBUG - Processing frame 65/205
+2025-07-06 20:21:19,086 - DEBUG - Processing frame 66/205
+2025-07-06 20:21:19,335 - DEBUG - Processing frame 67/205
+2025-07-06 20:21:19,587 - DEBUG - Processing frame 68/205
+2025-07-06 20:21:19,849 - DEBUG - Processing frame 69/205
+2025-07-06 20:21:20,101 - DEBUG - Processing frame 70/205
+2025-07-06 20:21:20,348 - DEBUG - Processing frame 71/205
+2025-07-06 20:21:20,605 - DEBUG - Processing frame 72/205
+2025-07-06 20:21:20,863 - DEBUG - Processing frame 73/205
+2025-07-06 20:21:21,135 - DEBUG - Processing frame 74/205
+2025-07-06 20:21:21,460 - DEBUG - Processing frame 75/205
+2025-07-06 20:21:21,754 - DEBUG - Processing frame 76/205
+2025-07-06 20:21:22,022 - DEBUG - Processing frame 77/205
+2025-07-06 20:21:22,315 - DEBUG - Processing frame 78/205
+2025-07-06 20:21:22,576 - DEBUG - Processing frame 79/205
+2025-07-06 20:21:22,843 - DEBUG - Processing frame 80/205
+2025-07-06 20:21:23,111 - DEBUG - Processing frame 81/205
+2025-07-06 20:21:23,393 - DEBUG - Processing frame 82/205
+2025-07-06 20:21:23,653 - DEBUG - Processing frame 83/205
+2025-07-06 20:21:23,932 - DEBUG - Processing frame 84/205
+2025-07-06 20:21:24,207 - DEBUG - Processing frame 85/205
+2025-07-06 20:21:24,470 - DEBUG - Processing frame 86/205
+2025-07-06 20:21:24,734 - DEBUG - Processing frame 87/205
+2025-07-06 20:21:25,020 - DEBUG - Processing frame 88/205
+2025-07-06 20:21:25,312 - DEBUG - Processing frame 89/205
+2025-07-06 20:21:25,593 - DEBUG - Processing frame 90/205
+2025-07-06 20:21:25,870 - DEBUG - Processing frame 91/205
+2025-07-06 20:21:26,127 - DEBUG - Processing frame 92/205
+2025-07-06 20:21:26,410 - DEBUG - Processing frame 93/205
+2025-07-06 20:21:26,676 - DEBUG - Processing frame 94/205
+2025-07-06 20:21:26,962 - DEBUG - Processing frame 95/205
+2025-07-06 20:21:27,229 - DEBUG - Processing frame 96/205
+2025-07-06 20:21:27,485 - DEBUG - Processing frame 97/205
+2025-07-06 20:21:27,735 - DEBUG - Processing frame 98/205
+2025-07-06 20:21:27,980 - DEBUG - Processing frame 99/205
+2025-07-06 20:21:28,245 - DEBUG - Processing frame 100/205
+2025-07-06 20:21:28,511 - DEBUG - Processing frame 101/205
+2025-07-06 20:21:28,764 - DEBUG - Processing frame 102/205
+2025-07-06 20:21:29,035 - DEBUG - Processing frame 103/205
+2025-07-06 20:21:29,328 - DEBUG - Processing frame 104/205
+2025-07-06 20:21:29,639 - DEBUG - Processing frame 105/205
+2025-07-06 20:21:29,920 - DEBUG - Processing frame 106/205
+2025-07-06 20:21:30,166 - DEBUG - Processing frame 107/205
+2025-07-06 20:21:30,475 - DEBUG - Processing frame 108/205
+2025-07-06 20:21:30,751 - DEBUG - Processing frame 109/205
+2025-07-06 20:21:31,015 - DEBUG - Processing frame 110/205
+2025-07-06 20:21:31,276 - DEBUG - Processing frame 111/205
+2025-07-06 20:21:31,544 - DEBUG - Processing frame 112/205
+2025-07-06 20:21:31,810 - DEBUG - Processing frame 113/205
+2025-07-06 20:21:32,068 - DEBUG - Processing frame 114/205
+2025-07-06 20:21:32,320 - DEBUG - Processing frame 115/205
+2025-07-06 20:21:32,588 - DEBUG - Processing frame 116/205
+2025-07-06 20:21:32,896 - DEBUG - Processing frame 117/205
+2025-07-06 20:21:33,187 - DEBUG - Processing frame 118/205
+2025-07-06 20:21:33,465 - DEBUG - Processing frame 119/205
+2025-07-06 20:21:33,755 - DEBUG - Processing frame 120/205
+2025-07-06 20:21:34,021 - DEBUG - Processing frame 121/205
+2025-07-06 20:21:34,336 - DEBUG - Processing frame 122/205
+2025-07-06 20:21:34,609 - DEBUG - Processing frame 123/205
+2025-07-06 20:21:34,882 - DEBUG - Processing frame 124/205
+2025-07-06 20:21:35,117 - DEBUG - Processing frame 125/205
+2025-07-06 20:21:35,373 - DEBUG - Processing frame 126/205
+2025-07-06 20:21:35,635 - DEBUG - Processing frame 127/205
+2025-07-06 20:21:35,903 - DEBUG - Processing frame 128/205
+2025-07-06 20:21:36,162 - DEBUG - Processing frame 129/205
+2025-07-06 20:21:36,443 - DEBUG - Processing frame 130/205
+2025-07-06 20:21:36,704 - DEBUG - Processing frame 131/205
+2025-07-06 20:21:36,975 - DEBUG - Processing frame 132/205
+2025-07-06 20:21:37,263 - DEBUG - Processing frame 133/205
+2025-07-06 20:21:37,528 - DEBUG - Processing frame 134/205
+2025-07-06 20:21:37,792 - DEBUG - Processing frame 135/205
+2025-07-06 20:21:38,050 - DEBUG - Processing frame 136/205
+2025-07-06 20:21:38,318 - DEBUG - Processing frame 137/205
+2025-07-06 20:21:38,569 - DEBUG - Processing frame 138/205
+2025-07-06 20:21:38,838 - DEBUG - Processing frame 139/205
+2025-07-06 20:21:39,114 - DEBUG - Processing frame 140/205
+2025-07-06 20:21:39,399 - DEBUG - Processing frame 141/205
+2025-07-06 20:21:39,661 - DEBUG - Processing frame 142/205
+2025-07-06 20:21:39,786 - DEBUG - Processing frame 143/205
+2025-07-06 20:21:39,930 - DEBUG - Processing frame 144/205
+2025-07-06 20:21:40,063 - DEBUG - Processing frame 145/205
+2025-07-06 20:21:40,204 - DEBUG - Processing frame 146/205
+2025-07-06 20:21:40,330 - DEBUG - Processing frame 147/205
+2025-07-06 20:21:40,518 - DEBUG - Processing frame 148/205
+2025-07-06 20:21:40,707 - DEBUG - Processing frame 149/205
+2025-07-06 20:21:40,869 - DEBUG - Processing frame 150/205
+2025-07-06 20:21:41,018 - DEBUG - Processing frame 151/205
+2025-07-06 20:21:41,237 - DEBUG - Processing frame 152/205
+2025-07-06 20:21:41,412 - DEBUG - Processing frame 153/205
+2025-07-06 20:21:41,558 - DEBUG - Processing frame 154/205
+2025-07-06 20:21:41,710 - DEBUG - Processing frame 155/205
+2025-07-06 20:21:41,850 - DEBUG - Processing frame 156/205
+2025-07-06 20:21:42,042 - DEBUG - Processing frame 157/205
+2025-07-06 20:21:42,207 - DEBUG - Processing frame 158/205
+2025-07-06 20:21:42,355 - DEBUG - Processing frame 159/205
+2025-07-06 20:21:42,602 - DEBUG - Processing frame 160/205
+2025-07-06 20:21:42,758 - DEBUG - Processing frame 161/205
+2025-07-06 20:21:42,888 - DEBUG - Processing frame 162/205
+2025-07-06 20:21:43,071 - DEBUG - Processing frame 163/205
+2025-07-06 20:21:43,240 - DEBUG - Processing frame 164/205
+2025-07-06 20:21:43,368 - DEBUG - Processing frame 165/205
+2025-07-06 20:21:43,538 - DEBUG - Processing frame 166/205
+2025-07-06 20:21:43,670 - DEBUG - Processing frame 167/205
+2025-07-06 20:21:43,841 - DEBUG - Processing frame 168/205
+2025-07-06 20:21:43,994 - DEBUG - Processing frame 169/205
+2025-07-06 20:21:44,192 - DEBUG - Processing frame 170/205
+2025-07-06 20:21:44,327 - DEBUG - Processing frame 171/205
+2025-07-06 20:21:44,488 - DEBUG - Processing frame 172/205
+2025-07-06 20:21:44,610 - DEBUG - Processing frame 173/205
+2025-07-06 20:21:44,784 - DEBUG - Processing frame 174/205
+2025-07-06 20:21:44,972 - DEBUG - Processing frame 175/205
+2025-07-06 20:21:45,160 - DEBUG - Processing frame 176/205
+2025-07-06 20:21:45,294 - DEBUG - Processing frame 177/205
+2025-07-06 20:21:45,446 - DEBUG - Processing frame 178/205
+2025-07-06 20:21:45,613 - DEBUG - Processing frame 179/205
+2025-07-06 20:21:45,792 - DEBUG - Processing frame 180/205
+2025-07-06 20:21:45,953 - DEBUG - Processing frame 181/205
+2025-07-06 20:21:46,110 - DEBUG - Processing frame 182/205
+2025-07-06 20:21:46,280 - DEBUG - Processing frame 183/205
+2025-07-06 20:21:46,416 - DEBUG - Processing frame 184/205
+2025-07-06 20:21:46,553 - DEBUG - Processing frame 185/205
+2025-07-06 20:21:46,693 - DEBUG - Processing frame 186/205
+2025-07-06 20:21:46,913 - DEBUG - Processing frame 187/205
+2025-07-06 20:21:47,046 - DEBUG - Processing frame 188/205
+2025-07-06 20:21:47,276 - DEBUG - Processing frame 189/205
+2025-07-06 20:21:47,429 - DEBUG - Processing frame 190/205
+2025-07-06 20:21:47,583 - DEBUG - Processing frame 191/205
+2025-07-06 20:21:47,722 - DEBUG - Processing frame 192/205
+2025-07-06 20:21:47,875 - DEBUG - Processing frame 193/205
+2025-07-06 20:21:48,072 - DEBUG - Processing frame 194/205
+2025-07-06 20:21:48,198 - DEBUG - Processing frame 195/205
+2025-07-06 20:21:48,340 - DEBUG - Processing frame 196/205
+2025-07-06 20:21:48,498 - DEBUG - Processing frame 197/205
+2025-07-06 20:21:48,645 - DEBUG - Processing frame 198/205
+2025-07-06 20:21:48,786 - DEBUG - Processing frame 199/205
+2025-07-06 20:21:48,913 - DEBUG - Processing frame 200/205
+2025-07-06 20:21:49,044 - DEBUG - Processing frame 201/205
+2025-07-06 20:21:49,171 - DEBUG - Processing frame 202/205
+2025-07-06 20:21:49,321 - DEBUG - Processing frame 203/205
+2025-07-06 20:21:49,449 - DEBUG - Processing frame 204/205
+2025-07-06 20:21:49,597 - DEBUG - Processing frame 205/205
+2025-07-06 20:21:52,802 - DEBUG - Video matting completed.
+2025-07-06 20:21:53,126 - INFO - Starting Tracking
+2025-07-06 20:22:10,307 - INFO - Finished writing tracking video to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\OUTPUT_209619477_209518299.avi
+2025-07-06 20:22:10,346 - INFO - Tracking data saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\tracking.json
