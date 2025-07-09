@@ -1,0 +1,25 @@
+2025-07-10 00:40:57,244 - INFO - Video Stabilization - Starting Process
+2025-07-10 00:41:14,408 - INFO - Stabilized video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\stabilize_209619477_209518299.avi
+2025-07-10 00:41:14,427 - INFO - Video Stabilization - Completed Successfully
+2025-07-10 00:41:14,618 - INFO - Background Subtraction - Starting Process
+2025-07-10 00:41:18,205 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Studying Frames history
+2025-07-10 00:41:18,207 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 1 / 8 pass
+2025-07-10 00:41:26,745 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 2 / 8 pass
+2025-07-10 00:41:34,592 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 3 / 8 pass
+2025-07-10 00:41:42,390 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 4 / 8 pass
+2025-07-10 00:41:50,335 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 5 / 8 pass
+2025-07-10 00:41:58,293 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 6 / 8 pass
+2025-07-10 00:42:06,488 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 7 / 8 pass
+2025-07-10 00:42:14,485 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 8 / 8 pass
+2025-07-10 00:42:22,598 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Finished
+2025-07-10 00:51:58,498 - INFO - Extracted (foreground) video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\extracted_209619477_209518299.avi
+2025-07-10 00:52:00,023 - INFO - Binary mask video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\binary_209619477_209518299.avi
+2025-07-10 00:52:00,024 - DEBUG - Background Subtraction - Completed Successfully
+2025-07-10 00:52:00,857 - DEBUG - Video Matting - Starting Process
+2025-07-10 00:52:34,942 - INFO - Matted video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\matted_209619477_209518299.avi
+2025-07-10 00:52:36,895 - INFO - Alpha mask video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\alpha_209619477_209518299.avi
+2025-07-10 00:52:36,895 - DEBUG - Video Matting - Completed Successfully
+2025-07-10 00:52:37,136 - INFO - Video Tracking - Starting Process
+2025-07-10 00:52:54,802 - INFO - Tracked video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\OUTPUT_209619477_209518299.avi
+2025-07-10 00:52:54,802 - INFO - Video Tracking - Completed Successfully
+2025-07-10 00:52:54,808 - INFO - Tracking.json saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\tracking.json

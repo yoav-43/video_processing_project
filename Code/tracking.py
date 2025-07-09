@@ -10,7 +10,7 @@ from logger import get_logger
 logger = get_logger()
 
 def track_video(input_video_path):
-    logger.info("Starting Tracking")
+    logger.info("Video Tracking - Starting Process")
 
     cap, width, height, fps = open_video(input_video_path)
     frames = load_video_frames(cap, color_space='bgr')
@@ -44,9 +44,11 @@ def track_video(input_video_path):
         tracking_results[str(t + 1)] = [y, x, h, w]
 
     save_video(FINAL_OUTPUT_PATH, tracked_frames, fps, (width, height), is_color=True)
-    logger.info(f"Finished writing tracking video to {FINAL_OUTPUT_PATH}")
+    logger.info(f"Tracked video saved to {FINAL_OUTPUT_PATH}")
+    logger.info("Video Tracking - Completed Successfully")
 
     with open(TRACKING_JSON_PATH, 'w') as f:
         json.dump(tracking_results, f, indent=2)
-    logger.info(f"Tracking data saved to {TRACKING_JSON_PATH}")
-    print('************ Tracking COMPLETED! ************')
+    logger.info(f"Tracking.json saved to {TRACKING_JSON_PATH}")
+
+

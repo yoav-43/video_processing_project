@@ -20,6 +20,12 @@ from paths import (
 
 
 def parse_arguments():
+    """
+    Parse command-line flags for each pipeline stage.
+
+    Returns:
+        argparse.Namespace: Boolean flags for each stage.
+    """
     parser = argparse.ArgumentParser(
         description="Pass no arguments or use -all to run the full pipeline. "
                     "Use individual flags to run specific parts.")
@@ -31,25 +37,34 @@ def parse_arguments():
 
 
 def main():
+    """
+    Entry point for running selected stages of the video processing pipeline.
+    Tracks elapsed time for each stage and saves results to a timing file.
+    """
     start_time = time.time()
     timing_dict = {}
 
     args = parse_arguments()
     logger = get_logger()
+
+    # If no flags provided, run all stages
     if len(sys.argv) == 1:
         args.vs = True
         args.bg = True
         args.mt = True
         args.tk = True
 
+    # Stage 1: Video stabilization
     if args.vs:
         stabilize_video(INPUT_VIDEO_PATH)
         timing_dict["stabilized"] = time.time() - start_time
 
+    # Stage 2: Background subtraction
     if args.bg:
         background_subtraction(STABILIZED_VIDEO_PATH)
         timing_dict["binary"] = time.time() - start_time
 
+    # Stage 3: Video matting
     if args.mt:
         video_matting(
             STABILIZED_VIDEO_PATH,
@@ -61,13 +76,15 @@ def main():
         timing_dict["matted"] = time.time() - start_time
         timing_dict["alpha"] = time.time() - start_time
 
+    # Stage 4: Object tracking
     if args.tk:
         track_video(MATTED_OUTPUT_PATH)
         timing_dict["output"] = time.time() - start_time
 
+    # Save timing results to JSON file
     with open(TIMING_JSON_PATH, 'w') as f:
         json.dump(timing_dict, f, indent=2)
-    print(f"[✓] timing.json saved to {TIMING_JSON_PATH}")
+    logger.info(f"Timing.json saved to {TIMING_JSON_PATH}")
 
 
 if __name__ == "__main__":

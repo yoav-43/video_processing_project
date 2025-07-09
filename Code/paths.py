@@ -30,7 +30,6 @@ BINARY_MASK_VIDEO_PATH = os.path.join(OUTPUTS_DIR, f'binary_{ID_SUFFIX}.avi')
 MATTED_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'matted_{ID_SUFFIX}.avi')
 ALPHA_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'alpha_{ID_SUFFIX}.avi')
 FINAL_OUTPUT_PATH = os.path.join(OUTPUTS_DIR, f'OUTPUT_{ID_SUFFIX}.avi')
-LOG_PATH = os.path.join(OUTPUTS_DIR, 'log.txt')
 
 # JSON outputs
 TIMING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'timing.json')
@@ -38,6 +37,7 @@ TRACKING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'tracking.json')
 
 # Temp
 TRANSFORMS_PATH = os.path.join(TEMP_DIR, 'transforms_video_stab.npy')
+LOG_PATH = os.path.join(TEMP_DIR, 'log.txt')
 
 # Optional
 DOCUMENT_REPORT_PATH = os.path.join(DOCUMENT_DIR, 'report.txt')

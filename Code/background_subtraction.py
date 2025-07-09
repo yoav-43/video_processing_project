@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
+from tqdm import tqdm
 
-from paths import EXTRACTED_VIDEO_PATH, BINARY_MASK_VIDEO_PATH
 from utils import (
     create_disk_kernel,
     select_foreground_pixels,
@@ -15,17 +15,24 @@ from utils import (
     close_video,
     save_video
 )
-from tqdm import tqdm
+from paths import EXTRACTED_VIDEO_PATH, BINARY_MASK_VIDEO_PATH
 from logger import get_logger
 
 logger = get_logger()
 
+# Constants controlling bandwidth for KDE smoothing
 BW_MEDIUM = 1
 BW_NARROW = 0.1
+
+# Constants representing approximate pixel heights in the frame for body parts
 LEGS_HEIGHT = 805
 SHOES_HEIGHT = 870
 SHOULDERS_HEIGHT = 405
+
+# Threshold for blue channel masking (to isolate non-blue regions)
 BLUE_MASK_THR = 140
+
+# Window sizes for local regions around person or face
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 1000
 FACE_WINDOW_HEIGHT = 250
@@ -33,6 +40,19 @@ FACE_WINDOW_WIDTH = 300
 
 
 def study_frames_history(n_frames, frames_hsv, h, w):
+    """
+    Perform background subtraction on a sequence of HSV frames using KNN background subtractor.
+
+    Args:
+        n_frames (int): Number of frames to process.
+        frames_hsv (list[np.ndarray]): List of frames in HSV color space.
+        h (int): Frame height in pixels.
+        w (int): Frame width in pixels.
+
+    Returns:
+        np.ndarray: A 3D numpy array of shape (n_frames, h, w) containing binary foreground masks per frame.
+                    Masks are uint8 arrays with 1 indicating foreground pixels.
+    """
     backSub = cv2.createBackgroundSubtractorKNN()
     mask_list = np.zeros((n_frames, h, w), dtype=np.uint8)
     logger.debug(f"Background Subtraction - BackgroundSubtractorKNN Studying Frames history")
@@ -40,6 +60,7 @@ def study_frames_history(n_frames, frames_hsv, h, w):
     for j in tqdm(range(8), desc="[BS] - Passes"):
         logger.debug(f"Background Subtraction - BackgroundSubtractorKNN {j + 1} / 8 pass")
         for index_frame, frame in enumerate(tqdm(frames_hsv, desc=f"[BS] - Pass {j + 1}", leave=False)):
+            # Use saturation and value channels only (skip hue)
             frame_sv = frame[:, :, 1:]
             fgMask = backSub.apply(frame_sv)
             fgMask = (fgMask > 200).astype(np.uint8)
@@ -50,6 +71,24 @@ def study_frames_history(n_frames, frames_hsv, h, w):
 
 
 def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
+    """
+    Collect color samples from foreground and background regions of the body and shoes for KDE modeling.
+
+    Args:
+        n_frames (int): Number of frames.
+        frames_bgr (list[np.ndarray]): List of frames in BGR color space.
+        h (int): Frame height.
+        w (int): Frame width.
+        mask_list (np.ndarray): Foreground masks from background subtraction (shape: n_frames x h x w).
+
+    Returns:
+        Tuple containing:
+            - omega_f_colors (np.ndarray): Concatenated foreground body colors.
+            - omega_b_colors (np.ndarray): Concatenated background body colors.
+            - omega_f_shoes_colors (np.ndarray): Concatenated foreground shoe colors.
+            - omega_b_shoes_colors (np.ndarray): Concatenated background shoe colors.
+            - person_and_blue_mask_list (np.ndarray): List of masks combining person and blue-channel threshold.
+    """
     omega_f_colors, omega_b_colors = None, None
     omega_f_shoes_colors, omega_b_shoes_colors = None, None
     person_and_blue_mask_list = np.zeros((n_frames, h, w))
@@ -68,7 +107,7 @@ def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
         person_and_blue_mask = (person_mask * blue_mask).astype(np.uint8)
         omega_f_indices = select_foreground_pixels(person_and_blue_mask, 20)
         omega_b_indices = select_background_pixels(person_and_blue_mask, 20)
-        '''Collect colors for shoes'''
+        # Collect colors for shoes
         shoes_mask = np.copy(person_and_blue_mask)
         shoes_mask[:SHOES_HEIGHT, :] = 0
         omega_f_shoes_indices = select_foreground_pixels(shoes_mask, 20)
@@ -94,6 +133,23 @@ def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
 
 def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors, omega_f_shoes_colors,
                                  omega_b_shoes_colors, person_and_blue_mask_list):
+    """
+    Filter frames using KDEs built on collected colors for body and shoes to generate refined masks.
+
+    Args:
+        n_frames (int): Number of frames.
+        frames_bgr (list[np.ndarray]): List of frames in BGR color space.
+        h (int): Frame height.
+        w (int): Frame width.
+        omega_f_colors (np.ndarray): Foreground body color samples.
+        omega_b_colors (np.ndarray): Background body color samples.
+        omega_f_shoes_colors (np.ndarray): Foreground shoe color samples.
+        omega_b_shoes_colors (np.ndarray): Background shoe color samples.
+        person_and_blue_mask_list (np.ndarray): Masks combining person and blue threshold per frame.
+
+    Returns:
+        np.ndarray: Refined masks list (shape: n_frames x h x w) after KDE filtering.
+    """
     foreground_pdf = create_kde(data_points=omega_f_colors, bandwidth=BW_MEDIUM)
     background_pdf = create_kde(data_points=omega_b_colors, bandwidth=BW_MEDIUM)
     foreground_shoes_pdf = create_kde(data_points=omega_f_shoes_colors, bandwidth=BW_MEDIUM)
@@ -102,7 +158,7 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
     foreground_pdf_memoization, background_pdf_memoization = dict(), dict()
     foreground_shoes_pdf_memoization, background_shoes_pdf_memoization = dict(), dict()
     or_mask_list = np.zeros((n_frames, h, w))
-    '''Filtering with KDEs general body parts & shoes'''
+    # Filtering with KDEs general body parts & shoes
     for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Filtering body & shoes KDE")):
         person_and_blue_mask = person_and_blue_mask_list[frame_index]
         person_and_blue_mask_indices = np.where(person_and_blue_mask == 1)
@@ -125,7 +181,7 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
         small_probs_fg_bigger_bg_mask[small_person_and_blue_mask_indices] = (
                 small_foreground_probabilities_stacked > small_background_probabilities_stacked).astype(np.uint8)
 
-        '''Shoes restoration'''
+        # Shoes restoration
         smaller_upper_white_mask = np.copy(small_probs_fg_bigger_bg_mask)
         smaller_upper_white_mask[:-270, :] = 1
         small_probs_fg_bigger_bg_mask_black_indices = np.where(smaller_upper_white_mask == 0)
@@ -164,9 +220,22 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
     return or_mask_list
 
 
-def collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list):
+def collect_colors_face_kde(frames_bgr, h, w, or_mask_list):
+    """
+    Collect color samples from face region foreground and background for KDE modeling.
+
+    Args:
+        n_frames (int): Number of frames.
+        frames_bgr (list[np.ndarray]): List of frames in BGR color space.
+        h (int): Frame height.
+        w (int): Frame width.
+        or_mask_list (np.ndarray): Refined masks from previous KDE filtering stage.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: Foreground and background face color samples concatenated over all frames.
+    """
     omega_f_face_colors, omega_b_face_colors = None, None
-    '''Collecting colors for building face KDE'''
+    # Collecting colors for building face KDE
     for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Collecting face colors")):
         or_mask = or_mask_list[frame_index]
         face_mask = np.copy(or_mask)
@@ -197,12 +266,27 @@ def collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list):
     return omega_f_face_colors, omega_b_face_colors
 
 
-def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_face_colors, or_mask_list):
+def filtering_face_kde(frames_bgr, h, w, omega_f_face_colors, omega_b_face_colors, or_mask_list):
+    """
+    Apply KDE filtering on face region to further refine segmentation masks.
+
+    Args:
+        n_frames (int): Number of frames.
+        frames_bgr (list[np.ndarray]): List of frames in BGR color space.
+        h (int): Frame height.
+        w (int): Frame width.
+        omega_f_face_colors (np.ndarray): Foreground face color samples.
+        omega_b_face_colors (np.ndarray): Background face color samples.
+        or_mask_list (np.ndarray): Masks from previous filtering stage.
+
+    Returns:
+        Tuple[List[np.ndarray], List[np.ndarray]]: Lists of final binary masks and masked color frames for all frames.
+    """
     foreground_face_pdf = create_kde(data_points=omega_f_face_colors, bandwidth=BW_NARROW)
     background_face_pdf = create_kde(data_points=omega_b_face_colors, bandwidth=BW_NARROW)
     foreground_face_pdf_memoization, background_face_pdf_memoization = dict(), dict()
     final_masks_list, final_frames_list = [], []
-    '''Final Processing of BS (applying face KDE)'''
+    # Final Processing of BS (applying face KDE)
     for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Filtering face KDE")):
         or_mask = or_mask_list[frame_index]
         face_mask = np.copy(or_mask)
@@ -272,20 +356,47 @@ def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_
 
 
 def write_final_video(final_masks_list, final_frames_list, cap, w, h, fps):
+    """
+    Save the final masked frames and binary masks as videos and close the video capture.
+
+    Args:
+        final_masks_list (list[np.ndarray]): List of final binary masks.
+        final_frames_list (list[np.ndarray]): List of masked color frames.
+        cap (cv2.VideoCapture): OpenCV video capture object to close.
+        w (int): Frame width.
+        h (int): Frame height.
+        fps (float): Frames per second of the video.
+    """
     save_video(path=EXTRACTED_VIDEO_PATH, frames=final_frames_list, fps=fps, size=(w, h), is_color=True)
+    logger.info(f"Extracted (foreground) video saved to {EXTRACTED_VIDEO_PATH}")
+
     save_video(path=BINARY_MASK_VIDEO_PATH, frames=final_masks_list, fps=fps, size=(w, h), is_color=False)
-    logger.debug('Background Subtraction - completed successfully')
-    logger.debug('Background Subtraction - Output saved to binary.avi')
-    logger.debug('Background Subtraction - Output saved to extracted.avi')
-    logger.info('Background Subtraction - process finished')
+    logger.info(f"Binary mask video saved to {BINARY_MASK_VIDEO_PATH}")
+
+    logger.debug('Background Subtraction - Completed Successfully')
+
     close_video(cap)
 
 
 def background_subtraction(input_video_path):
-    logger.info('Background Subtraction - process initialization')
+    """
+    Main function to run the background subtraction pipeline on an input video.
+
+    Steps:
+      - Open video and load frames in BGR and HSV color spaces.
+      - Perform background subtraction to get initial masks.
+      - Collect color samples for body and shoes KDE modeling.
+      - Filter masks with KDEs for body and shoes.
+      - Collect face color samples and filter masks with face KDE.
+      - Write the final masked video and binary masks to disk.
+
+    Args:
+        input_video_path (str): Path to the input video file.
+    """
+    logger.info('Background Subtraction - Starting Process')
     # Read input video
     cap, w, h, fps = open_video(path=input_video_path)
-    # Get frame count
+    # Get frame count and frames in two color spaces
     frames_bgr = load_video_frames(cap, color_space='bgr')
     frames_hsv = load_video_frames(cap, color_space='hsv')
     n_frames = len(frames_bgr)
@@ -294,7 +405,7 @@ def background_subtraction(input_video_path):
         n_frames, frames_bgr, h, w, mask_list)
     or_mask_list = filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors,
                                                 omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list)
-    omega_f_face_colors, omega_b_face_colors = collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list)
-    final_masks_list, final_frames_list = filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors,
+    omega_f_face_colors, omega_b_face_colors = collect_colors_face_kde(frames_bgr, h, w, or_mask_list)
+    final_masks_list, final_frames_list = filtering_face_kde(frames_bgr, h, w, omega_f_face_colors,
                                                              omega_b_face_colors, or_mask_list)
     write_final_video(final_masks_list, final_frames_list, cap, w, h, fps)

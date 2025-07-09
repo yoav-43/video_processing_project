@@ -1,2 +1,0 @@
-2025-07-09 21:27:27,370 - DEBUG - Starting video matting.
-2025-07-09 21:28:09,885 - DEBUG - Video matting completed.
