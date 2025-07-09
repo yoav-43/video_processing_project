@@ -3,20 +3,21 @@ import cv2
 
 from paths import EXTRACTED_VIDEO_PATH, BINARY_MASK_VIDEO_PATH
 from utils import (
-    disk_kernel,
-    choose_indices_for_foreground,
-    choose_indices_for_background,
-    check_in_dict,
-    new_estimate_pdf,
-    scale_matrix_0_to_255,
-    apply_mask_on_color_frame,
-    get_video_files,
-    load_entire_video,
-    release_video_files,
-    write_video
+    create_disk_kernel,
+    select_foreground_pixels,
+    select_background_pixels,
+    memoize_dict,
+    create_kde,
+    normalize_to_255,
+    apply_mask_to_frame,
+    open_video,
+    load_video_frames,
+    close_video,
+    save_video
 )
 from tqdm import tqdm
 from logger import get_logger
+
 logger = get_logger()
 
 BW_MEDIUM = 1
@@ -29,6 +30,7 @@ WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 1000
 FACE_WINDOW_HEIGHT = 250
 FACE_WINDOW_WIDTH = 300
+
 
 def study_frames_history(n_frames, frames_hsv, h, w):
     backSub = cv2.createBackgroundSubtractorKNN()
@@ -46,14 +48,16 @@ def study_frames_history(n_frames, frames_hsv, h, w):
     logger.debug(f"Background Subtraction - BackgroundSubtractorKNN Finished")
     return mask_list
 
+
 def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
     omega_f_colors, omega_b_colors = None, None
     omega_f_shoes_colors, omega_b_shoes_colors = None, None
     person_and_blue_mask_list = np.zeros((n_frames, h, w))
-    for frame_index, frame in enumerate(tqdm(frames_bgr, desc="Background Subtraction - Collecting body & shoes colors")):
+    for frame_index, frame in enumerate(
+            tqdm(frames_bgr, desc="Background Subtraction - Collecting body & shoes colors")):
         blue_frame, _, _ = cv2.split(frame)
         mask_for_frame = mask_list[frame_index].astype(np.uint8)
-        mask_for_frame = cv2.morphologyEx(mask_for_frame, cv2.MORPH_CLOSE, disk_kernel(6))
+        mask_for_frame = cv2.morphologyEx(mask_for_frame, cv2.MORPH_CLOSE, create_disk_kernel(6))
         mask_for_frame = cv2.medianBlur(mask_for_frame, 7)
         contours, _ = cv2.findContours(mask_for_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = list(contours)
@@ -62,15 +66,15 @@ def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
         cv2.fillPoly(person_mask, pts=[contours[0]], color=1)
         blue_mask = (blue_frame < BLUE_MASK_THR).astype(np.uint8)
         person_and_blue_mask = (person_mask * blue_mask).astype(np.uint8)
-        omega_f_indices = choose_indices_for_foreground(person_and_blue_mask, 20)
-        omega_b_indices = choose_indices_for_background(person_and_blue_mask, 20)
+        omega_f_indices = select_foreground_pixels(person_and_blue_mask, 20)
+        omega_b_indices = select_background_pixels(person_and_blue_mask, 20)
         '''Collect colors for shoes'''
         shoes_mask = np.copy(person_and_blue_mask)
         shoes_mask[:SHOES_HEIGHT, :] = 0
-        omega_f_shoes_indices = choose_indices_for_foreground(shoes_mask, 20)
+        omega_f_shoes_indices = select_foreground_pixels(shoes_mask, 20)
         shoes_mask = np.copy(person_and_blue_mask)
         shoes_mask[:SHOES_HEIGHT - 120, :] = 1
-        omega_b_shoes_indices = choose_indices_for_background(shoes_mask, 20)
+        omega_b_shoes_indices = select_background_pixels(shoes_mask, 20)
         person_and_blue_mask_list[frame_index] = person_and_blue_mask
         if omega_f_colors is None:
             omega_f_colors = frame[omega_f_indices[:, 0], omega_f_indices[:, 1], :]
@@ -87,11 +91,13 @@ def collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list):
 
     return omega_f_colors, omega_b_colors, omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list
 
-def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors, omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list):
-    foreground_pdf = new_estimate_pdf(omega_values=omega_f_colors, bw_method=BW_MEDIUM)
-    background_pdf = new_estimate_pdf(omega_values=omega_b_colors, bw_method=BW_MEDIUM)
-    foreground_shoes_pdf = new_estimate_pdf(omega_values=omega_f_shoes_colors, bw_method=BW_MEDIUM)
-    background_shoes_pdf = new_estimate_pdf(omega_values=omega_b_shoes_colors, bw_method=BW_MEDIUM)
+
+def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors, omega_f_shoes_colors,
+                                 omega_b_shoes_colors, person_and_blue_mask_list):
+    foreground_pdf = create_kde(data_points=omega_f_colors, bandwidth=BW_MEDIUM)
+    background_pdf = create_kde(data_points=omega_b_colors, bandwidth=BW_MEDIUM)
+    foreground_shoes_pdf = create_kde(data_points=omega_f_shoes_colors, bandwidth=BW_MEDIUM)
+    background_shoes_pdf = create_kde(data_points=omega_b_shoes_colors, bandwidth=BW_MEDIUM)
 
     foreground_pdf_memoization, background_pdf_memoization = dict(), dict()
     foreground_shoes_pdf_memoization, background_shoes_pdf_memoization = dict(), dict()
@@ -111,10 +117,10 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
         small_person_and_blue_mask_indices = np.where(small_person_and_blue_mask == 1)
         small_probs_fg_bigger_bg_mask = np.zeros(small_person_and_blue_mask.shape)
         small_foreground_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(foreground_pdf_memoization, elem, foreground_pdf),
+            map(lambda elem: memoize_dict(foreground_pdf_memoization, elem, foreground_pdf),
                 map(tuple, small_frame_bgr[small_person_and_blue_mask_indices])), dtype=float)
         small_background_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(background_pdf_memoization, elem, background_pdf),
+            map(lambda elem: memoize_dict(background_pdf_memoization, elem, background_pdf),
                 map(tuple, small_frame_bgr[small_person_and_blue_mask_indices])), dtype=float)
         small_probs_fg_bigger_bg_mask[small_person_and_blue_mask_indices] = (
                 small_foreground_probabilities_stacked > small_background_probabilities_stacked).astype(np.uint8)
@@ -125,11 +131,11 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
         small_probs_fg_bigger_bg_mask_black_indices = np.where(smaller_upper_white_mask == 0)
         small_probs_shoes_fg_bigger_bg_mask = np.zeros(small_person_and_blue_mask.shape)
         small_shoes_foreground_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(foreground_shoes_pdf_memoization, elem, foreground_shoes_pdf),
+            map(lambda elem: memoize_dict(foreground_shoes_pdf_memoization, elem, foreground_shoes_pdf),
                 map(tuple, small_frame_bgr[small_probs_fg_bigger_bg_mask_black_indices])), dtype=float)
 
         small_shoes_background_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(background_shoes_pdf_memoization, elem, background_shoes_pdf),
+            map(lambda elem: memoize_dict(background_shoes_pdf_memoization, elem, background_shoes_pdf),
                 map(tuple, small_frame_bgr[small_probs_fg_bigger_bg_mask_black_indices])), dtype=float)
 
         shoes_fg_shoes_bg_ratio = small_shoes_foreground_probabilities_stacked / (
@@ -149,13 +155,14 @@ def filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, ome
         small_or_mask[y_shoes_mean - DELTA_Y:, :] = cv2.morphologyEx(small_or_mask[y_shoes_mean - DELTA_Y:, :],
                                                                      cv2.MORPH_CLOSE, np.ones((1, 20)))
         small_or_mask[y_shoes_mean - DELTA_Y:, :] = cv2.morphologyEx(small_or_mask[y_shoes_mean - DELTA_Y:, :],
-                                                                     cv2.MORPH_CLOSE, disk_kernel(20))
+                                                                     cv2.MORPH_CLOSE, create_disk_kernel(20))
 
         or_mask = np.zeros(person_and_blue_mask.shape)
         or_mask[max(0, y_mean - WINDOW_HEIGHT // 2):min(h, y_mean + WINDOW_HEIGHT // 2),
         max(0, x_mean - WINDOW_WIDTH // 2):min(w, x_mean + WINDOW_WIDTH // 2)] = small_or_mask
         or_mask_list[frame_index] = or_mask
     return or_mask_list
+
 
 def collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list):
     omega_f_face_colors, omega_b_face_colors = None, None
@@ -177,8 +184,8 @@ def collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list):
         small_face_mask = cv2.morphologyEx(small_face_mask, cv2.MORPH_OPEN, np.ones((20, 1), np.uint8))
         small_face_mask = cv2.morphologyEx(small_face_mask, cv2.MORPH_OPEN, np.ones((1, 20), np.uint8))
 
-        omega_f_face_indices = choose_indices_for_foreground(small_face_mask, 20)
-        omega_b_face_indices = choose_indices_for_background(small_face_mask, 20)
+        omega_f_face_indices = select_foreground_pixels(small_face_mask, 20)
+        omega_b_face_indices = select_background_pixels(small_face_mask, 20)
         if omega_f_face_colors is None:
             omega_f_face_colors = small_frame_bgr[omega_f_face_indices[:, 0], omega_f_face_indices[:, 1], :]
             omega_b_face_colors = small_frame_bgr[omega_b_face_indices[:, 0], omega_b_face_indices[:, 1], :]
@@ -187,11 +194,12 @@ def collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list):
                 (omega_f_face_colors, small_frame_bgr[omega_f_face_indices[:, 0], omega_f_face_indices[:, 1], :]))
             omega_b_face_colors = np.concatenate(
                 (omega_b_face_colors, small_frame_bgr[omega_b_face_indices[:, 0], omega_b_face_indices[:, 1], :]))
-    return  omega_f_face_colors, omega_b_face_colors
+    return omega_f_face_colors, omega_b_face_colors
+
 
 def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_face_colors, or_mask_list):
-    foreground_face_pdf = new_estimate_pdf(omega_values=omega_f_face_colors, bw_method=BW_NARROW)
-    background_face_pdf = new_estimate_pdf(omega_values=omega_b_face_colors, bw_method=BW_NARROW)
+    foreground_face_pdf = create_kde(data_points=omega_f_face_colors, bandwidth=BW_NARROW)
+    background_face_pdf = create_kde(data_points=omega_b_face_colors, bandwidth=BW_NARROW)
     foreground_face_pdf_memoization, background_face_pdf_memoization = dict(), dict()
     final_masks_list, final_frames_list = [], []
     '''Final Processing of BS (applying face KDE)'''
@@ -212,10 +220,10 @@ def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_
         small_frame_bgr_stacked = small_frame_bgr.reshape((-1, 3))
 
         small_face_foreground_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(foreground_face_pdf_memoization, elem, foreground_face_pdf),
+            map(lambda elem: memoize_dict(foreground_face_pdf_memoization, elem, foreground_face_pdf),
                 map(tuple, small_frame_bgr_stacked)), dtype=float)
         small_face_background_probabilities_stacked = np.fromiter(
-            map(lambda elem: check_in_dict(background_face_pdf_memoization, elem, background_face_pdf),
+            map(lambda elem: memoize_dict(background_face_pdf_memoization, elem, background_face_pdf),
                 map(tuple, small_frame_bgr_stacked)), dtype=float)
 
         small_face_foreground_probabilities = small_face_foreground_probabilities_stacked.reshape(small_face_mask.shape)
@@ -237,8 +245,8 @@ def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_
         small_contour_mask = np.zeros(small_probs_face_fg_bigger_face_bg_mask.shape, dtype=np.uint8)
         cv2.fillPoly(small_contour_mask, pts=[contours[0]], color=1)
 
-        small_contour_mask = cv2.morphologyEx(small_contour_mask, cv2.MORPH_CLOSE, disk_kernel(12))
-        small_contour_mask = cv2.dilate(small_contour_mask, disk_kernel(3), iterations=1).astype(np.uint8)
+        small_contour_mask = cv2.morphologyEx(small_contour_mask, cv2.MORPH_CLOSE, create_disk_kernel(12))
+        small_contour_mask = cv2.dilate(small_contour_mask, create_disk_kernel(3), iterations=1).astype(np.uint8)
         small_contour_mask[-50:, :] = small_face_mask[-50:, :]
 
         final_mask = np.copy(or_mask).astype(np.uint8)
@@ -258,30 +266,35 @@ def filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_
         final_contour_mask = np.zeros(final_mask.shape)
         cv2.fillPoly(final_contour_mask, pts=[contours[0]], color=1)
         final_mask = (final_contour_mask * final_mask).astype(np.uint8)
-        final_masks_list.append(scale_matrix_0_to_255(final_mask))
-        final_frames_list.append(apply_mask_on_color_frame(frame=frame, mask=final_mask))
+        final_masks_list.append(normalize_to_255(final_mask))
+        final_frames_list.append(apply_mask_to_frame(frame=frame, mask=final_mask))
     return final_masks_list, final_frames_list
 
+
 def write_final_video(final_masks_list, final_frames_list, cap, w, h, fps):
-    write_video(output_path=EXTRACTED_VIDEO_PATH, frames=final_frames_list, fps=fps, out_size=(w, h), is_color=True)
-    write_video(output_path=BINARY_MASK_VIDEO_PATH, frames=final_masks_list, fps=fps, out_size=(w, h), is_color=False)
+    save_video(path=EXTRACTED_VIDEO_PATH, frames=final_frames_list, fps=fps, size=(w, h), is_color=True)
+    save_video(path=BINARY_MASK_VIDEO_PATH, frames=final_masks_list, fps=fps, size=(w, h), is_color=False)
     logger.debug('Background Subtraction - completed successfully')
     logger.debug('Background Subtraction - Output saved to binary.avi')
     logger.debug('Background Subtraction - Output saved to extracted.avi')
     logger.info('Background Subtraction - process finished')
-    release_video_files(cap)
-    
+    close_video(cap)
+
+
 def background_subtraction(input_video_path):
     logger.info('Background Subtraction - process initialization')
     # Read input video
-    cap, w, h, fps = get_video_files(path=input_video_path)
+    cap, w, h, fps = open_video(path=input_video_path)
     # Get frame count
-    frames_bgr = load_entire_video(cap, color_space='bgr')
-    frames_hsv = load_entire_video(cap, color_space='hsv')
+    frames_bgr = load_video_frames(cap, color_space='bgr')
+    frames_hsv = load_video_frames(cap, color_space='hsv')
     n_frames = len(frames_bgr)
     mask_list = study_frames_history(n_frames, frames_hsv, h, w)
-    omega_f_colors, omega_b_colors, omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list = collect_colors_body_and_shoes_kde(n_frames, frames_bgr, h, w, mask_list)
-    or_mask_list = filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors, omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list)
+    omega_f_colors, omega_b_colors, omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list = collect_colors_body_and_shoes_kde(
+        n_frames, frames_bgr, h, w, mask_list)
+    or_mask_list = filtering_body_and_shoes_kde(n_frames, frames_bgr, h, w, omega_f_colors, omega_b_colors,
+                                                omega_f_shoes_colors, omega_b_shoes_colors, person_and_blue_mask_list)
     omega_f_face_colors, omega_b_face_colors = collect_colors_face_kde(n_frames, frames_bgr, h, w, or_mask_list)
-    final_masks_list, final_frames_list = filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors, omega_b_face_colors, or_mask_list)
+    final_masks_list, final_frames_list = filtering_face_kde(n_frames, frames_bgr, h, w, omega_f_face_colors,
+                                                             omega_b_face_colors, or_mask_list)
     write_final_video(final_masks_list, final_frames_list, cap, w, h, fps)

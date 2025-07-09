@@ -4,7 +4,7 @@ import json
 from tqdm import tqdm
 
 from paths import FINAL_OUTPUT_PATH, BACKGROUND_IMAGE_PATH, TRACKING_JSON_PATH
-from utils import get_video_files, load_entire_video, write_video
+from utils import open_video, load_video_frames, save_video
 from logger import get_logger
 
 logger = get_logger()
@@ -12,8 +12,8 @@ logger = get_logger()
 def track_video(input_video_path):
     logger.info("Starting Tracking")
 
-    cap, width, height, fps = get_video_files(input_video_path)
-    frames = load_entire_video(cap, color_space='bgr')
+    cap, width, height, fps = open_video(input_video_path)
+    frames = load_video_frames(cap, color_space='bgr')
 
     # Load and resize background image
     background = cv2.imread(BACKGROUND_IMAGE_PATH)
@@ -43,7 +43,7 @@ def track_video(input_video_path):
         tracked_frames.append(frame)
         tracking_results[str(t + 1)] = [y, x, h, w]
 
-    write_video(FINAL_OUTPUT_PATH, tracked_frames, fps, (width, height), is_color=True)
+    save_video(FINAL_OUTPUT_PATH, tracked_frames, fps, (width, height), is_color=True)
     logger.info(f"Finished writing tracking video to {FINAL_OUTPUT_PATH}")
 
     with open(TRACKING_JSON_PATH, 'w') as f:

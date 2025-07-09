@@ -1,10 +1,11 @@
 import numpy as np
 import cv2
+from tqdm import tqdm
 
 from utils import (
-    get_video_files,
-    load_entire_video,
-    write_video
+    open_video,
+    load_video_frames,
+    save_video
 )
 from logger import get_logger
 logger = get_logger()
@@ -33,10 +34,10 @@ def video_matting(stabilized_video_path, binary_mask_path, background_path,
     logger.debug("Starting video matting.")
 
     # Load videos
-    cap, width, height, fps = get_video_files(stabilized_video_path)
-    frames = load_entire_video(cap)
-    cap, _, _, _ = get_video_files(binary_mask_path)
-    masks = load_entire_video(cap)
+    cap, width, height, fps = open_video(stabilized_video_path)
+    frames = load_video_frames(cap)
+    cap, _, _, _ = open_video(binary_mask_path)
+    masks = load_video_frames(cap)
 
     if len(frames) != len(masks):
         raise ValueError("Mismatch between number of frames and masks.")
@@ -50,9 +51,7 @@ def video_matting(stabilized_video_path, binary_mask_path, background_path,
     matted_frames = []
     alpha_frames = []
 
-    for i, (frame, mask) in enumerate(zip(frames, masks)):
-        logger.debug(f"Processing frame {i + 1}/{len(frames)}")
-
+    for frame, mask in tqdm(zip(frames, masks), desc="Video Matting", total=len(frames), unit="frame"):
         if mask.ndim == 3:
             mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
 
@@ -65,8 +64,8 @@ def video_matting(stabilized_video_path, binary_mask_path, background_path,
         matted_frames.append(blended)
         alpha_frames.append(alpha_display_bgr)
 
-    write_video(matted_output_path, matted_frames, fps, (width, height), True)
-    write_video(alpha_output_path, alpha_frames, fps, (width, height), False)
+    save_video(matted_output_path, matted_frames, fps, (width, height), True)
+    save_video(alpha_output_path, alpha_frames, fps, (width, height), True)
 
     logger.debug("Video matting completed.")
     return matted_frames, alpha_frames

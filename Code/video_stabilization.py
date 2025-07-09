@@ -2,12 +2,12 @@ import numpy as np
 import cv2
 
 from utils import (
-    get_video_files,
-    load_entire_video,
-    release_video_files,
-    write_video,
-    smooth,
-    fixBorder
+    open_video,
+    load_video_frames,
+    close_video,
+    save_video,
+    smooth_trajectory,
+    scale_frame_border
 )
 from paths import STABILIZED_VIDEO_PATH, TRANSFORMS_PATH
 from tqdm import tqdm
@@ -18,14 +18,14 @@ MAX_CORNERS = 500
 QUALITY_LEVEL = 0.01
 MIN_DISTANCE = 30
 BLOCK_SIZE = 3
-SMOOTH_RADIUS = 5
+smooth_trajectory_RADIUS = 5
 
 
 def stabilize_video(input_video_path):
     logger.info('Video Stabilization - Initializing process.')
 
-    cap, w, h, fps = get_video_files(path=input_video_path)
-    frames_bgr = load_entire_video(cap, color_space='bgr')
+    cap, w, h, fps = open_video(path=input_video_path)
+    frames_bgr = load_video_frames(cap, color_space='bgr')
 
     n_frames = len(frames_bgr)
     prev = frames_bgr[0]
@@ -53,23 +53,23 @@ def stabilize_video(input_video_path):
         prev_gray = curr_gray
 
     trajectory = np.cumsum(transforms, axis=0)
-    smoothed_trajectory = smooth(trajectory, SMOOTH_RADIUS)
-    difference = smoothed_trajectory - trajectory
-    transforms_smooth = transforms + difference
+    smooth_trajectoryed_trajectory = smooth_trajectory(trajectory, smooth_trajectory_RADIUS)
+    difference = smooth_trajectoryed_trajectory - trajectory
+    transforms_smooth_trajectory = transforms + difference
 
     stabilized_frames_list = [frames_bgr[0]]
 
     for frame_index, frame in tqdm(enumerate(frames_bgr[:-1]), total=n_frames - 1, desc="Warping frames"):
-        transform_matrix = transforms_smooth[frame_index].reshape((3, 3))
+        transform_matrix = transforms_smooth_trajectory[frame_index].reshape((3, 3))
         frame_stabilized = cv2.warpPerspective(frame, transform_matrix, (w, h))
-        frame_stabilized = fixBorder(frame_stabilized)
+        frame_stabilized = scale_frame_border(frame_stabilized)
 
         stabilized_frames_list.append(frame_stabilized)
         transforms_list[frame_index] = transform_matrix
 
-    release_video_files(cap)
+    close_video(cap)
 
-    write_video(STABILIZED_VIDEO_PATH, stabilized_frames_list, fps, (w, h), is_color=True)
+    save_video(STABILIZED_VIDEO_PATH, stabilized_frames_list, fps, (w, h), is_color=True)
     transforms_list.dump(TRANSFORMS_PATH)
 
 
