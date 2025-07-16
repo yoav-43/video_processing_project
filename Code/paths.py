@@ -36,6 +36,5 @@ TIMING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'timing.json')
 TRACKING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'tracking.json')
 
 # Temp
-TRANSFORMS_PATH = os.path.join(TEMP_DIR, 'transforms_video_stab.npy')
 LOG_PATH = os.path.join(TEMP_DIR, 'log.txt')
 
