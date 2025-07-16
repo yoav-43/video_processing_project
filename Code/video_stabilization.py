@@ -90,6 +90,5 @@ def stabilize_video(input_video_path):
     # Save results
     save_video(STABILIZED_VIDEO_PATH, stabilized_frames, fps, (width, height), is_color=True)
     logger.info(f"Stabilized video saved to {STABILIZED_VIDEO_PATH}")
-    smoothed_homographies.dump(TRANSFORMS_PATH)
 
     logger.info("Video Stabilization - Completed Successfully")

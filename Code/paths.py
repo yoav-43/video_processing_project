@@ -39,6 +39,3 @@ TRACKING_JSON_PATH = os.path.join(OUTPUTS_DIR, 'tracking.json')
 TRANSFORMS_PATH = os.path.join(TEMP_DIR, 'transforms_video_stab.npy')
 LOG_PATH = os.path.join(TEMP_DIR, 'log.txt')
 
-# Optional
-DOCUMENT_REPORT_PATH = os.path.join(DOCUMENT_DIR, 'report.txt')
-SCREEN_RECORDING_PATH = os.path.join(SCREENREC_DIR, 'recording.mp4')
