@@ -10,7 +10,7 @@ from utils import (
     smooth_trajectory,
     scale_frame_border
 )
-from paths import STABILIZED_VIDEO_PATH, TRANSFORMS_PATH
+from paths import STABILIZED_VIDEO_PATH
 from logger import get_logger
 
 logger = get_logger()

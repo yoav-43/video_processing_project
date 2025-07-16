@@ -1,5 +1,26 @@
-2025-07-10 01:13:34,062 - INFO - Video Tracking - Starting Process
-2025-07-10 01:13:42,151 - INFO - Tracked video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\OUTPUT_209619477_209518299.avi
-2025-07-10 01:13:42,154 - INFO - Tracking results saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\tracking.json
-2025-07-10 01:13:42,154 - INFO - Video Tracking - Completed Successfully
-2025-07-10 01:13:42,278 - INFO - Timing.json saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\timing.json
+2025-07-16 22:39:16,276 - INFO - Video Stabilization - Starting Process
+2025-07-16 22:39:34,896 - INFO - Stabilized video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\stabilize_209619477_209518299.avi
+2025-07-16 22:39:34,896 - INFO - Video Stabilization - Completed Successfully
+2025-07-16 22:39:35,135 - INFO - Background Subtraction - Starting Process
+2025-07-16 22:39:38,977 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Studying Frames history
+2025-07-16 22:39:38,978 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 1 / 8 pass
+2025-07-16 22:39:47,328 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 2 / 8 pass
+2025-07-16 22:39:56,194 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 3 / 8 pass
+2025-07-16 22:40:06,327 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 4 / 8 pass
+2025-07-16 22:40:16,089 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 5 / 8 pass
+2025-07-16 22:40:26,436 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 6 / 8 pass
+2025-07-16 22:40:36,375 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 7 / 8 pass
+2025-07-16 22:40:46,065 - DEBUG - Background Subtraction - BackgroundSubtractorKNN 8 / 8 pass
+2025-07-16 22:40:55,851 - DEBUG - Background Subtraction - BackgroundSubtractorKNN Finished
+2025-07-16 22:50:34,206 - INFO - Extracted (foreground) video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\extracted_209619477_209518299.avi
+2025-07-16 22:50:35,693 - INFO - Binary mask video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\binary_209619477_209518299.avi
+2025-07-16 22:50:35,694 - DEBUG - Background Subtraction - Completed Successfully
+2025-07-16 22:50:36,445 - DEBUG - Video Matting - Starting Process
+2025-07-16 22:51:12,938 - INFO - Matted video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\matted_209619477_209518299.avi
+2025-07-16 22:51:14,982 - INFO - Alpha mask video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\alpha_209619477_209518299.avi
+2025-07-16 22:51:14,983 - DEBUG - Video Matting - Completed Successfully
+2025-07-16 22:51:15,270 - INFO - Video Tracking - Starting Process
+2025-07-16 22:51:22,736 - INFO - Tracked video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\OUTPUT_209619477_209518299.avi
+2025-07-16 22:51:22,739 - INFO - Tracking results saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\tracking.json
+2025-07-16 22:51:22,740 - INFO - Video Tracking - Completed Successfully
+2025-07-16 22:51:22,862 - INFO - Timing.json saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\timing.json
