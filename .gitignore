@@ -76,3 +76,7 @@ Thumbs.db
 *.bak
 *.tmp
 *.~*
+
+
+Outputs/
+Temp/
