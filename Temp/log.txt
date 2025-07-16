@@ -1,0 +1,5 @@
+2025-07-10 01:13:34,062 - INFO - Video Tracking - Starting Process
+2025-07-10 01:13:42,151 - INFO - Tracked video saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\OUTPUT_209619477_209518299.avi
+2025-07-10 01:13:42,154 - INFO - Tracking results saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\tracking.json
+2025-07-10 01:13:42,154 - INFO - Video Tracking - Completed Successfully
+2025-07-10 01:13:42,278 - INFO - Timing.json saved to C:\Users\yoavd\OneDrive - mail.tau.ac.il\Video Processing\FinalProject_209619477_209518299\Code\..\Outputs\timing.json
